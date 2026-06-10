@@ -3,10 +3,587 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Notification App</title>
+  <title>Notification Management System</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+    }
+
+    header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+
+    .content {
+      padding: 30px;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .control-section {
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+
+    .control-section h2 {
+      color: #667eea;
+      margin-bottom: 15px;
+      font-size: 1.3em;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      color: #333;
+      font-weight: 500;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-family: inherit;
+      font-size: 0.95em;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.95em;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    button.secondary {
+      background: #6c757d;
+      margin-right: 10px;
+    }
+
+    button.danger {
+      background: #dc3545;
+    }
+
+    button.success {
+      background: #28a745;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .notifications-section {
+      margin-top: 30px;
+    }
+
+    .notifications-section h2 {
+      color: #667eea;
+      margin-bottom: 20px;
+      font-size: 1.3em;
+    }
+
+    .notification-card {
+      background: #f8f9fa;
+      border-left: 4px solid;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      transition: box-shadow 0.2s;
+    }
+
+    .notification-card:hover {
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .notification-card.critical {
+      border-left-color: #dc3545;
+      background: #fff5f5;
+    }
+
+    .notification-card.high {
+      border-left-color: #fd7e14;
+      background: #fffbf0;
+    }
+
+    .notification-card.medium {
+      border-left-color: #ffc107;
+      background: #fffef0;
+    }
+
+    .notification-card.low {
+      border-left-color: #28a745;
+      background: #f0fdf4;
+    }
+
+    .notification-content {
+      flex: 1;
+    }
+
+    .notification-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .priority-badge {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85em;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .priority-badge.critical { background: #dc3545; color: white; }
+    .priority-badge.high { background: #fd7e14; color: white; }
+    .priority-badge.medium { background: #ffc107; color: #333; }
+    .priority-badge.low { background: #28a745; color: white; }
+
+    .notification-meta {
+      font-size: 0.85em;
+      color: #666;
+      margin-bottom: 8px;
+    }
+
+    .notification-message {
+      color: #333;
+      font-size: 0.95em;
+      line-height: 1.4;
+    }
+
+    .notification-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .notification-actions button {
+      padding: 6px 12px;
+      font-size: 0.85em;
+    }
+
+    .edit-button {
+      background: #0d6efd;
+    }
+
+    .delete-button {
+      background: #dc3545;
+    }
+
+    .notification-item-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .notification-item-actions button {
+      padding: 6px 12px;
+      font-size: 0.85em;
+    }
+
+    .alert {
+      padding: 15px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .alert.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .alert.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .alert.info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: #999;
+    }
+
+    .empty-state-icon {
+      font-size: 3em;
+      margin-bottom: 10px;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #667eea;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 768px) {
+      .controls {
+        grid-template-columns: 1fr;
+      }
+
+      header h1 {
+        font-size: 1.8em;
+      }
+
+      .notification-card {
+        flex-direction: column;
+      }
+
+      .notification-item-actions {
+        margin-top: 10px;
+      }
+    }
+  </style>
 </head>
 <body>
-  <h1>Notification App Frontend</h1>
-  <p>This is a placeholder page for the notification frontend.</p>
+  <div class="container">
+    <header>
+      <h1>📬 Notification Management System</h1>
+      <p>Manage and track all your notifications in one place</p>
+    </header>
+
+    <div class="content">
+      <div id="alerts"></div>
+
+      <div class="controls">
+        <div class="control-section">
+          <h2>➕ Create Notification</h2>
+          <div class="form-group">
+            <label for="message">Message *</label>
+            <textarea id="message" placeholder="Enter notification message..."></textarea>
+          </div>
+          <div class="form-group">
+            <label for="priority">Priority *</label>
+            <select id="priority">
+              <option value="">Select Priority</option>
+              <option value="critical">🔴 Critical</option>
+              <option value="high">🟠 High</option>
+              <option value="medium">🟡 Medium</option>
+              <option value="low">🟢 Low</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="recipient">Recipient</label>
+            <input type="text" id="recipient" placeholder="e.g., User Name" />
+          </div>
+          <button onclick="createNotification()" class="success">Create</button>
+        </div>
+
+        <div class="control-section">
+          <h2>🔍 Search & Fetch</h2>
+          <div class="form-group">
+            <label for="searchQuery">Search Query</label>
+            <input type="text" id="searchQuery" placeholder="Search notifications..." />
+          </div>
+          <div class="button-group">
+            <button onclick="searchNotifications()">Search</button>
+            <button onclick="loadAllNotifications()" class="secondary">Load All</button>
+            <button onclick="fetchExternalAPI()" class="secondary">🌐 Fetch API</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="notifications-section">
+        <h2>📋 Notifications</h2>
+        <div id="notificationsList"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = "http://localhost:3001";
+
+    // Show alert
+    function showAlert(message, type = "info") {
+      const alertDiv = document.getElementById("alerts");
+      const alert = document.createElement("div");
+      alert.className = `alert ${type}`;
+      alert.textContent = message;
+      alertDiv.appendChild(alert);
+      setTimeout(() => alert.remove(), 4000);
+    }
+
+    // Create notification
+    async function createNotification() {
+      const message = document.getElementById("message").value;
+      const priority = document.getElementById("priority").value;
+      const recipient = document.getElementById("recipient").value;
+
+      if (!message || !priority) {
+        showAlert("Message and Priority are required!", "error");
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_BASE}/notifications`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message, priority, recipient })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          showAlert("✓ Notification created!", "success");
+          document.getElementById("message").value = "";
+          document.getElementById("priority").value = "";
+          document.getElementById("recipient").value = "";
+          loadAllNotifications();
+        } else {
+          showAlert("Error: " + data.error, "error");
+        }
+      } catch (error) {
+        showAlert("Error creating notification: " + error.message, "error");
+      }
+    }
+
+    // Load all notifications
+    async function loadAllNotifications() {
+      try {
+        const response = await fetch(`${API_BASE}/notifications`);
+        const data = await response.json();
+
+        if (data.success) {
+          displayNotifications(data.data);
+        } else {
+          showAlert("Error loading notifications", "error");
+        }
+      } catch (error) {
+        showAlert("Error: " + error.message, "error");
+      }
+    }
+
+    // Search notifications
+    async function searchNotifications() {
+      const query = document.getElementById("searchQuery").value;
+
+      if (!query) {
+        showAlert("Please enter a search query", "error");
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_BASE}/notifications/search/${query}`);
+        const data = await response.json();
+
+        if (data.success) {
+          displayNotifications(data.data);
+          showAlert(`Found ${data.data.length} notification(s)`, "info");
+        } else {
+          showAlert("Error searching notifications", "error");
+        }
+      } catch (error) {
+        showAlert("Error: " + error.message, "error");
+      }
+    }
+
+    // Fetch from external API
+    async function fetchExternalAPI() {
+      try {
+        const response = await fetch(`${API_BASE}/notifications/api/external`);
+        const data = await response.json();
+
+        if (data.success) {
+          displayNotifications(data.data);
+          showAlert(`Loaded ${data.data.length} notifications from API`, "success");
+        } else {
+          showAlert("Error fetching from API", "error");
+        }
+      } catch (error) {
+        showAlert("Error: " + error.message, "error");
+      }
+    }
+
+    // Delete notification
+    async function deleteNotification(id) {
+      if (!confirm("Are you sure you want to delete this notification?")) return;
+
+      try {
+        const response = await fetch(`${API_BASE}/notifications/${id}`, {
+          method: "DELETE"
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          showAlert("✓ Notification deleted!", "success");
+          loadAllNotifications();
+        } else {
+          showAlert("Error: " + data.error, "error");
+        }
+      } catch (error) {
+        showAlert("Error: " + error.message, "error");
+      }
+    }
+
+    // Update status
+    async function updateStatus(id, status) {
+      try {
+        const response = await fetch(`${API_BASE}/notifications/${id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          showAlert("✓ Status updated!", "success");
+          loadAllNotifications();
+        } else {
+          showAlert("Error: " + data.error, "error");
+        }
+      } catch (error) {
+        showAlert("Error: " + error.message, "error");
+      }
+    }
+
+    // Display notifications
+    function displayNotifications(notifications) {
+      const list = document.getElementById("notificationsList");
+
+      if (!notifications || notifications.length === 0) {
+        list.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">📭</div>
+            <p>No notifications yet. Create one to get started!</p>
+          </div>
+        `;
+        return;
+      }
+
+      list.innerHTML = notifications
+        .map(n => `
+          <div class="notification-card ${n.priority}">
+            <div class="notification-content">
+              <div class="notification-header">
+                <span class="priority-badge ${n.priority}">${n.priority}</span>
+                <span class="notification-meta">${n.status || "pending"}</span>
+              </div>
+              <div class="notification-message">${escapeHtml(n.message)}</div>
+              <div class="notification-meta">
+                👤 ${n.recipient || "General"} | 📅 ${new Date(n.createdAt).toLocaleString()}
+              </div>
+              <div class="notification-actions">
+                <select onchange="updateStatus('${n.id}', this.value)" style="padding: 6px; font-size: 0.85em;">
+                  <option value="">Change Status</option>
+                  <option value="pending">Pending</option>
+                  <option value="read">Read</option>
+                  <option value="archived">Archived</option>
+                </select>
+                <button class="delete-button" onclick="deleteNotification('${n.id}')">Delete</button>
+              </div>
+            </div>
+          </div>
+        `)
+        .join("");
+    }
+
+    // Escape HTML
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Initialize
+    window.addEventListener("load", loadAllNotifications);
+  </script>
 </body>
 </html>
